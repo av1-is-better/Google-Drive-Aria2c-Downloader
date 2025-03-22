@@ -1,5 +1,3 @@
-#!/home/ubuntu/venv/bin/python
-
 import requests
 import re
 import os
