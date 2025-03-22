@@ -42,6 +42,8 @@ Google Drive Aria2c Downloader is a Python script that allows you to download fi
    sudo pacman -S aria2    # Arch Linux
    brew install aria2      # macOS
    ```
+   
+4. Replace download_path value within google-downloader.py according to your directory.
 
 ## Usage
 
