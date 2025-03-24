@@ -3,6 +3,9 @@ import re
 import os
 from colorama import Fore, Style
 
+# Download Folder Path
+download_dir = "/home/ubuntu/downloads"
+
 print(Style.BRIGHT + Fore.LIGHTCYAN_EX + '''
 
 ░██████╗░░█████╗░░█████╗░░██████╗░██╗░░░░░███████╗  ██████╗░██████╗░██╗██╗░░░██╗███████╗
@@ -45,10 +48,7 @@ if exit_code != 0:
     exit(1)
 
 # Google Drive File ID
-drive_file_id = extract_drive_id(input(Style.BRIGHT + Fore.LIGHTMAGENTA_EX + "Enter File URL: " + Fore.LIGHTBLUE_EX))
-
-# Download Folder Path
-download_dir = "/home/ubuntu/downloads"
+drive_file_id = extract_drive_id(input(Style.BRIGHT + Fore.LIGHTMAGENTA_EX + "\n\nEnter File URL: " + Fore.LIGHTBLUE_EX))
 
 
 uuid_value, file_name = extract_uuid_and_filename(drive_file_id)
@@ -80,12 +80,24 @@ print(Style.BRIGHT + Fore.GREEN +'\n============================================
 print(Style.BRIGHT + Fore.LIGHTCYAN_EX + "                          Download Started  ")
 print(Style.BRIGHT + Fore.GREEN +'=========================================================================\n'+ Style.RESET_ALL)
 
-os.system(f'''aria2c \\
-    -x4 \\
-    -d {download_dir} \\
-    --file-allocation=none \\
-    --summary-interval=0 \\
-    --console-log-level=error \\
-    --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0" \\
-    "https://drive.usercontent.google.com/download?id={drive_file_id}&export=download&authuser=0&confirm=t&uuid={uuid_value}"
-    ''')
+aria2c_exit_code = -1
+
+while aria2c_exit_code != 0:
+    aria2c_exit_code = os.system(f'''aria2c \\
+        -x4 \\
+        --continue=true \\
+        -d {download_dir} \\
+        --file-allocation=none \\
+        --summary-interval=0 \\
+        --console-log-level=error \\
+        --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0" \\
+        "https://drive.usercontent.google.com/download?id={drive_file_id}&export=download&authuser=0&confirm=t&uuid={uuid_value}"
+        ''')
+    if aria2c_exit_code != 0:
+        print(Style.BRIGHT + Fore.LIGHTRED_EX +"\nDownload Failed...Trying Again" + Style.RESET_ALL)
+        uuid_value, file_name = extract_uuid_and_filename(drive_file_id)
+    else:
+        print(Style.BRIGHT + Fore.GREEN +'\n=========================================================================')
+        print(Style.BRIGHT + Fore.LIGHTCYAN_EX + "                          Download Completed  ")
+        print(Style.BRIGHT + Fore.GREEN +'=========================================================================\n'+ Style.RESET_ALL)
+        break
